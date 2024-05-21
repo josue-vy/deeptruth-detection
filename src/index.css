@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  .letter {
+    display: inline-block;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+  }
+  
+  .letter-0 { animation-delay: 0s; }
+  .letter-1 { animation-delay: 0.05s; }
+  .letter-2 { animation-delay: 0.1s; }
+  .letter-3 { animation-delay: 0.15s; }
+  .letter-4 { animation-delay: 0.2s; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    height: 100%;
+    overflow: hidden;
+  }

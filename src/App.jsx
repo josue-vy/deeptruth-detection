@@ -1,27 +1,58 @@
 import React, { useState, useEffect } from 'react';
 // import  Stars from '../src/utils/animatedTwo';
+import Login from './components/login/login';
+import Header from './components/header/header';
+import Footer from './components/footer/Footer';
 import './index.css';
+const DropAndBox = () => {
+  const [dragging, setDragging] = useState(false);
 
-const Header = () => {
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging(false);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging(false);
+    const files = [...e.dataTransfer.files];
+    // Handle dropped files here
+    console.log(files);
+  };
+
   return (
-    <header className="bg-black text-white p-4 flex justify-between items-center">
-      <div className="flex items-center space-x-4">
-        <img src="src/assets/deeptruthlogo.png" alt="" className="w-60 h-auto"/>
-      </div>
-      <div className="flex items-center space-x-4 ml-auto">
-        <a href="#" className="hover:text-purple-500">API</a>
-        <div className="mr-4">
-          <a href="#" className="hover:text-purple-500 mr-4">Soluciones</a>
-        </div>
-      </div>
-      <div>
-        <button className="bg-transparent border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-black">
-          Iniciar Sesión
-        </button>
-      </div>
-    </header>
+    <div
+      className={`border-2 border-dashed border-gray-400 rounded-lg p-8 text-center ${
+        dragging ? "bg-gray-100" : "bg-white"
+      }`}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      <p className="text-lg font-semibold mb-4">Arrastra y suelta archivos aquí</p>
+      <p className="text-gray-500">o</p>
+      <button className="mt-4 px-4 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:bg-gray-700">
+        Seleccionar archivos
+      </button>
+    </div>
   );
 };
+
+
 
 const AnimatedText = () => {
   const [showText, setShowText] = useState(false);
@@ -56,6 +87,8 @@ const App = () => {
     <div>
       <Header />
       <AnimatedText />
+      <DropAndBox/>
+      <Footer />
       {/* <Stars /> */}
       {/* <CanvasSketch /> */}
     </div>

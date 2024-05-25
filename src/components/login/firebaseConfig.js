@@ -19,7 +19,6 @@ const provider = new GoogleAuthProvider();
 const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
-    // Puedes obtener la información del usuario de result.user
     console.log(result.user);
   } catch (error) {
     console.error(error);

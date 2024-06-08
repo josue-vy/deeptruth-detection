@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Link } from "react-router-dom";
 
 const DropAndBox = () => {
   const [dragging, setDragging] = useState(false);
@@ -48,6 +49,7 @@ const DropAndBox = () => {
   };
 
   return (
+    <>
     <div
       className={`border-2 border-dashed mb-8 border-gray-400 rounded-lg p-8 text-center ${
         dragging ? 'bg-gray-100' : 'bg-white'
@@ -78,6 +80,18 @@ const DropAndBox = () => {
         </div>
       )}
     </div>
+    <div className="flex justify-center">
+    <Link to="/resultado" className="hover:text-purple-500 mr-4" >
+    <button
+          className="mt-4 px-4 py-2 bg-violet-800 text-white rounded-md focus:outline-none focus:bg-gray-700"
+          onClick={() => console.log('Escanear clicked')}
+        >
+          Escanear
+        </button>
+    </Link>
+
+      </div>
+  </>
   );
 };
 

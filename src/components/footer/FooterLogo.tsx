@@ -1,10 +1,11 @@
 import React from "react";
+import Logo from "../header/Logo";
+
 const FooterLogo = () => {
-    return (
-      <div className="flex items-center">
-        <img src="src/assets/deeptruthlogo.png" alt="Deeptruth Logo" className="w-40 h-auto mb-4" />
-      </div>
-    );
-  };
+  return (
+    <div className="flex items-center">
+      <Logo className="mb-4 w-40 h-auto" />
+    </div>
+  );
+};
 export default FooterLogo;
-  

@@ -5,6 +5,7 @@ import Footer from '../components/footer/Footer';
 import AnimatedText from '../utils/AnimatedText';
 import DropAndBox from '../utils/DropAndBox';
 import LoginForm from '../components/login/login'; // Asegúrate de que esta ruta sea correcta
+import Home from '../components/inicio/inicio';
 
 const MainLayout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const [isLoginOpen, setIsLoginOpen] = useState(false); // Estado para controlar la visibilidad del login
@@ -21,8 +22,8 @@ const MainLayout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     <div>
       <Header onLoginClick={handleLoginClick} />
       <main>{children}</main>
-      <AnimatedText />
-      <DropAndBox />
+      {/* <AnimatedText /> */}
+      <Home/>
       <Footer />
       {isLoginOpen && <LoginForm onClose={handleCloseLogin} />} {/* Mostrar LoginForm como modal */}
     </div>

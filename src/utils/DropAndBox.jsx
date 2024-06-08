@@ -49,7 +49,7 @@ const DropAndBox = () => {
 
   return (
     <div
-      className={`border-2 border-dashed border-gray-400 rounded-lg p-8 text-center ${
+      className={`border-2 border-dashed mb-8 border-gray-400 rounded-lg p-8 text-center ${
         dragging ? 'bg-gray-100' : 'bg-white'
       }`}
       onDragEnter={handleDragEnter}

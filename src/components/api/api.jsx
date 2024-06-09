@@ -6,7 +6,6 @@ const DocumentacionApi = () => {
   return (
     
     <div>
- <Header />
       <main className="flex-grow max-w-4xl mx-auto p-6 space-y-8">
         <h2 className="text-5xl font-bold text-white text-center">DeepTruth Developer</h2>
         <p className="text-lg text-white leading-relaxed">
@@ -47,7 +46,6 @@ const DocumentacionApi = () => {
         </ul>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };

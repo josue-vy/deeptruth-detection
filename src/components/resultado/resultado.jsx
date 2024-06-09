@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import Header from '../header/header';
-import Footer from '../footer/Footer';
+import React, { useState, useEffect } from 'react';
 
 const StarRating = ({ rating, hoverRating, onMouseEnter, onMouseLeave, onClick }) => {
   return (
@@ -61,6 +59,15 @@ const Resultado = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [fileName, setFileName] = useState('');
+  const [fileUrl, setFileUrl] = useState('');
+  const [uploadTime, setUploadTime] = useState('');
+
+  useEffect(() => {
+    setFileName(localStorage.getItem('fileName'));
+    setFileUrl(localStorage.getItem('fileUrl'));
+    setUploadTime(localStorage.getItem('uploadTime'));
+  }, []);
 
   const handleStarClick = (newRating) => {
     setRating(newRating);
@@ -69,9 +76,30 @@ const Resultado = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
       <div className="flex flex-col items-center justify-center flex-grow">
-      <div className="bg-gray-900 text-white rounded-lg p-6 mb-6 w-full shadow-md">
+      {fileUrl && (
+          <div className="bg-gray-900 text-white rounded-lg p-6 mb-6 w-full shadow-md flex items-center mt-6">
+            <div className="flex-shrink-0">
+            <h2 className="text-lg mb-4 font-semibold">Archivo Subido:</h2>
+              {fileName.endsWith('.mp4') ? (
+                <video className="w-full max-w-md" controls>
+                  <source src={fileUrl} type="video/mp4" />
+                  Tu navegador no soporta la reproducción de videos.
+                </video>
+              ) : (
+                <img src={fileUrl} alt="Uploaded file" className="w-full max-w-md" />
+              )}
+            </div>
+            <div className="ml-4">
+              <p className="text-gray-400">Nombre del archivo:</p>
+              <p className="text-white font-bold">{fileName}</p>
+              <p className="text-gray-400">Hora de envio:</p>
+              <p className="text-white font-bold">{uploadTime}</p>
+
+            </div>
+          </div>
+        )}
+        <div className="bg-gray-900 text-white rounded-lg p-6 mb-6 w-full shadow-md">
           <h2 className="text-lg mb-4 font-semibold">Análisis de Autenticidad:</h2>
           <p className="mb-2">Se ha determinado que este contenido tiene una alta probabilidad de ser <span className="font-bold text-green-500">REAL</span> con una probabilidad de: <span className="font-bold">00%</span></p>
           <p>Se ha determinado que este contenido tiene una alta probabilidad de ser <span className="font-bold text-purple-500">FAKE</span> con una probabilidad de: <span className="font-bold">00%</span></p>
@@ -88,7 +116,6 @@ const Resultado = () => {
           />
         </div>
       </div>
-      <Footer />
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );

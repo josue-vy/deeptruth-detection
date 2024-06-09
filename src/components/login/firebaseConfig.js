@@ -1,22 +1,25 @@
-// src/firebaseConfig.js
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword as signInWithEmailAndPasswordFirebase, signOut as signOutFirebase } from 'firebase/auth';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAVb4DQej-3QukZ_Kbp6aYLUqLlqVLHsgw",
-    authDomain: "deeptruth-1c34f.firebaseapp.com",
-    projectId: "deeptruth-1c34f",
-    storageBucket: "deeptruth-1c34f.appspot.com",
-    messagingSenderId: "1042631066986",
-    appId: "1:1042631066986:web:f2d7655cb00da9b4ee9113",
-    measurementId: "G-XFJ1LFRZNG"
-  };
+  apiKey: "AIzaSyAVb4DQej-3QukZ_Kbp6aYLUqLlqVLHsgw",
+  authDomain: "deeptruth-1c34f.firebaseapp.com",
+  projectId: "deeptruth-1c34f",
+  storageBucket: "deeptruth-1c34f.appspot.com",
+  messagingSenderId: "1042631066986",
+  appId: "1:1042631066986:web:f2d7655cb00da9b4ee9113",
+  measurementId: "G-XFJ1LFRZNG"
+};
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-const signInWithGoogle = async () => {
+export const signInWithEmailAndPassword = (email, password) => {
+  return signInWithEmailAndPasswordFirebase(auth, email, password);
+};
+
+export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
     console.log(result.user);
@@ -24,5 +27,8 @@ const signInWithGoogle = async () => {
     console.error(error);
   }
 };
+export const signOut = () => {
+  return signOutFirebase(auth);
+};
 
-export { auth, signInWithGoogle };
+export { auth };

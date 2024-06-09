@@ -1,10 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const DropAndBox = () => {
   const [dragging, setDragging] = useState(false);
   const [fileName, setFileName] = useState('');
+  const [fileUrl, setFileUrl] = useState('');
+  const [uploadTime, setUploadTime] = useState('');
+  const [scanEnabled, setScanEnabled] = useState(false);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -28,18 +32,34 @@ const DropAndBox = () => {
     e.stopPropagation();
     setDragging(false);
     const files = [...e.dataTransfer.files];
-    // Handle dropped files here
     if (files.length > 0) {
-      setFileName(files[0].name);
+      const file = files[0];
+      setFileName(file.name);
+      const fileObjectUrl = URL.createObjectURL(file);
+      setFileUrl(fileObjectUrl);
+      const uploadTime = new Date().toLocaleString();
+      setUploadTime(uploadTime);
+      localStorage.setItem('fileName', file.name);
+      localStorage.setItem('fileUrl', fileObjectUrl);
+      localStorage.setItem('uploadTime', uploadTime);
+      setScanEnabled(true);
     }
     console.log(files);
   };
 
   const handleFileSelect = (e) => {
     const files = [...e.target.files];
-    // Handle selected files here
     if (files.length > 0) {
-      setFileName(files[0].name);
+      const file = files[0];
+      setFileName(file.name);
+      const fileObjectUrl = URL.createObjectURL(file);
+      setFileUrl(fileObjectUrl);
+      const uploadTime = new Date().toLocaleString();
+      setUploadTime(uploadTime);
+      localStorage.setItem('fileName', file.name);
+      localStorage.setItem('fileUrl', fileObjectUrl);
+      localStorage.setItem('uploadTime', uploadTime);
+      setScanEnabled(true);
     }
     console.log(files);
   };
@@ -48,50 +68,52 @@ const DropAndBox = () => {
     fileInputRef.current.click();
   };
 
+  const handleScanClick = () => {
+    navigate('/resultado');
+  };
+
   return (
     <>
-    <div
-      className={`border-2 border-dashed mb-8 border-gray-400 rounded-lg p-8 text-center ${
-        dragging ? 'bg-gray-100' : 'bg-white'
-      }`}
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-    >
-      <p className="text-lg font-semibold mb-4">Arrastra y suelta archivos aquí</p>
-      <p className="text-gray-500">o</p>
-      <button
-        className="mt-4 px-4 py-2 bg-violet-800 text-white rounded-md focus:outline-none focus:bg-gray-700"
-        onClick={handleButtonClick}
+      <div
+        className={`border-2 border-dashed mb-8 border-gray-400 rounded-lg p-8 text-center ${
+          dragging ? 'bg-gray-100' : 'bg-white'
+        }`}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
       >
-        Cargar archivos
-      </button>
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: 'none' }}
-        onChange={handleFileSelect}
-        multiple
-      />
-      {fileName && (
-        <div className="mt-4">
-          <p className="text-gray-700">Archivo seleccionado: {fileName}</p>
-        </div>
-      )}
-    </div>
-    <div className="flex justify-center">
-    <Link to="/resultado" className="hover:text-purple-500 mr-4" >
-    <button
+        <p className="text-lg font-semibold mb-4">Arrastra y suelta archivos aquí</p>
+        <p className="text-gray-500">o</p>
+        <button
           className="mt-4 px-4 py-2 bg-violet-800 text-white rounded-md focus:outline-none focus:bg-gray-700"
-          onClick={() => console.log('Escanear clicked')}
+          onClick={handleButtonClick}
+        >
+          Cargar archivos
+        </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileSelect}
+          multiple
+        />
+        {fileName && (
+          <div className="mt-4">
+            <p className="text-gray-700">Archivo seleccionado: {fileName}</p>
+          </div>
+        )}
+      </div>
+      <div className="flex justify-center">
+        <button
+          className={`mt-4 px-4 py-2 bg-violet-800 text-white rounded-md focus:outline-none focus:bg-gray-700 ${!scanEnabled ? 'opacity-50 cursor-not-allowed bg-gray-500' : ''}`}
+          onClick={handleScanClick}
+          disabled={!scanEnabled}
         >
           Escanear
         </button>
-    </Link>
-
       </div>
-  </>
+    </>
   );
 };
 

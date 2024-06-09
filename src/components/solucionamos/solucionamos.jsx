@@ -1,12 +1,9 @@
 import React from 'react';
-import Header from '../header/header';
-import Footer from '../footer/Footer';
 
 const Solucionamos = () => {
   return (
     
     <div>
- <Header />
       <main className="flex-grow max-w-4xl mx-auto p-6 space-y-8">
         {/* Introducción a los Problemas que Abordamos */}
         <section className="space-y-4">
@@ -44,7 +41,6 @@ const Solucionamos = () => {
           </ul>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };

@@ -1,12 +1,9 @@
 import React from 'react';
 import UserCard from '../gestionarUsuario/userCard';
-import Header from '../header/header';
-import Footer from '../footer/Footer';
 
 function GestionarUsuario() {
   return (
     <div>
-    <Header/>
       <div className="max-w-3xl mx-auto bg-gray-900 rounded-lg shadow-lg p-6 mt-8">
         <h1 className="text-2xl font-bold mb-6 text-white">GESTIONAR USUARIOS</h1>
         <div className="mb-4">
@@ -25,7 +22,6 @@ function GestionarUsuario() {
           <UserCard username="Nombre del usuario" rating={7} />
         </div>
       </div>
-      <Footer/>
     </div>
   );
 }

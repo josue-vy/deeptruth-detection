@@ -1,28 +1,32 @@
-// LoginForm.jsx
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword, signInWithGoogle } from '../login/firebaseConfig';
 
-const LoginForm = ({ onClose, setIsLoggedIn }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+interface LoginFormProps {
+  onClose: () => void;
+  setIsLoggedIn: (isLoggedIn: boolean) => void;
+}
 
-  const handleEmailChange = (e) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onClose, setIsLoggedIn }) => {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(email, password);
       console.log("Inicio de sesión exitoso");
       setIsLoggedIn(true); // Actualiza el estado de autenticación
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message);
     }
   };
@@ -32,7 +36,7 @@ const LoginForm = ({ onClose, setIsLoggedIn }) => {
       await signInWithGoogle();
       setIsLoggedIn(true); // Actualiza el estado de autenticación
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       setError(error.message);
     }

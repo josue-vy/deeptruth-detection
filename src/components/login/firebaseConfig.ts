@@ -1,5 +1,12 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword as signInWithEmailAndPasswordFirebase, signOut as signOutFirebase } from 'firebase/auth';
+// src/components/login/firebaseConfig.ts
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAVb4DQej-3QukZ_Kbp6aYLUqLlqVLHsgw",
@@ -8,15 +15,15 @@ const firebaseConfig = {
   storageBucket: "deeptruth-1c34f.appspot.com",
   messagingSenderId: "1042631066986",
   appId: "1:1042631066986:web:f2d7655cb00da9b4ee9113",
-  measurementId: "G-XFJ1LFRZNG"
+  measurementId: "G-XFJ1LFRZNG",
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export const signInWithEmailAndPassword = (email, password) => {
-  return signInWithEmailAndPasswordFirebase(auth, email, password);
+export const signInWithEmailAndPassword = (email: string, password: string) => {
+  return firebaseSignInWithEmailAndPassword(auth, email, password);
 };
 
 export const signInWithGoogle = async () => {
@@ -27,8 +34,9 @@ export const signInWithGoogle = async () => {
     console.error(error);
   }
 };
+
 export const signOut = () => {
-  return signOutFirebase(auth);
+  return firebaseSignOut(auth);
 };
 
 export { auth };

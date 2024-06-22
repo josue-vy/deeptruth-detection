@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { guardarValoracion } from "../api/valoracion.api";
+import { Link } from "react-router-dom";
 
-const StarRating = ({ rating, hoverRating, onMouseEnter, onMouseLeave, onClick }) => {
+const StarRating = ({
+  rating,
+  hoverRating,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+}) => {
   return (
     <div className="flex">
       {[...Array(5)].map((_, i) => {
-        const fillColor = (hoverRating || rating) > i ? 'text-yellow-400' : 'text-gray-400';
+        const fillColor =
+          (hoverRating || rating) > i ? "text-yellow-400" : "text-gray-400";
         return (
           <svg
             key={i}
@@ -23,7 +32,18 @@ const StarRating = ({ rating, hoverRating, onMouseEnter, onMouseLeave, onClick }
   );
 };
 
-const Modal = ({ isOpen, onClose }) => {
+const Modal = ({ isOpen, onClose, rating }) => {
+  const [comentario, setComentario] = useState("");
+
+  const handleSubmit = async () => {
+    try {
+      await guardarValoracion(rating, comentario);
+      onClose();
+    } catch (error) {
+      console.error("Error al enviar la valoración:", error);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -35,12 +55,16 @@ const Modal = ({ isOpen, onClose }) => {
         >
           &times;
         </button>
-        <h2 className="text-lg mb-4 font-semibold">Gracias por tu calificación</h2>
+        <h2 className="text-lg mb-4 font-semibold">
+          Gracias por tu calificación
+        </h2>
         <div className="flex justify-center mb-4">
           {[...Array(5)].map((_, i) => (
             <svg
               key={i}
-              className="w-6 h-10 fill-current text-yellow-400"
+              className={`w-6 h-10 fill-current ${
+                i < rating ? "text-yellow-400" : "text-gray-400"
+              }`}
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
             >
@@ -48,8 +72,20 @@ const Modal = ({ isOpen, onClose }) => {
             </svg>
           ))}
         </div>
-        <textarea className="w-full p-2 mb-4 bg-gray-100 text-black rounded border border-gray-300 focus:ring-2 focus:ring-purple-500" placeholder="Comenta..."></textarea>
-        <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">Enviar</button>
+        <textarea
+          className="w-full p-2 mb-4 bg-gray-100 text-black rounded border border-gray-300 focus:ring-2 focus:ring-purple-500"
+          placeholder="Comenta..."
+          value={comentario}
+          onChange={(e) => setComentario(e.target.value)}
+        ></textarea>
+        <Link to="/scaner" className="hover:text-purple-500 mr-4">
+          <button
+            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+            onClick={handleSubmit}
+          >
+            Enviar
+          </button>
+        </Link>
       </div>
     </div>
   );
@@ -59,18 +95,18 @@ const Resultado = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
-  const [fileName, setFileName] = useState('');
-  const [fileUrl, setFileUrl] = useState('');
-  const [uploadTime, setUploadTime] = useState('');
-  const [label, setLabel] = useState('');
+  const [fileName, setFileName] = useState("");
+  const [fileUrl, setFileUrl] = useState("");
+  const [uploadTime, setUploadTime] = useState("");
+  const [label, setLabel] = useState("");
   const [probability, setProbability] = useState(0);
 
   useEffect(() => {
-    setFileName(localStorage.getItem('fileName'));
-    setFileUrl(localStorage.getItem('fileUrl'));
-    setUploadTime(localStorage.getItem('uploadTime'));
-    setLabel(localStorage.getItem('label'));
-    setProbability(parseFloat(localStorage.getItem('probability')));
+    setFileName(localStorage.getItem("fileName"));
+    setFileUrl(localStorage.getItem("fileUrl"));
+    setUploadTime(localStorage.getItem("uploadTime"));
+    setLabel(localStorage.getItem("label"));
+    setProbability(parseFloat(localStorage.getItem("probability")));
   }, []);
 
   const handleStarClick = (newRating) => {
@@ -78,7 +114,7 @@ const Resultado = () => {
     setIsModalOpen(true);
   };
 
-  const complementaryLabel = label === 'real' ? 'fake' : 'real';
+  const complementaryLabel = label === "real" ? "fake" : "real";
   const complementaryProbability = 1 - probability;
 
   return (
@@ -88,13 +124,17 @@ const Resultado = () => {
           <div className="bg-gray-900 text-white rounded-lg p-6 mb-6 w-full shadow-md flex items-center mt-6">
             <div className="flex-shrink-0">
               <h2 className="text-lg mb-4 font-semibold">Archivo Subido:</h2>
-              {fileName.endsWith('.mp4') ? (
+              {fileName.endsWith(".mp4") ? (
                 <video className="w-full max-w-md" controls>
                   <source src={fileUrl} type="video/mp4" />
                   Tu navegador no soporta la reproducción de videos.
                 </video>
               ) : (
-                <img src={fileUrl} alt="Uploaded file" className="w-full max-w-md" />
+                <img
+                  src={fileUrl}
+                  alt="Uploaded file"
+                  className="w-full max-w-md"
+                />
               )}
             </div>
             <div className="ml-4">
@@ -106,13 +146,33 @@ const Resultado = () => {
           </div>
         )}
         <div className="bg-gray-900 text-white rounded-lg p-6 mb-6 w-full shadow-md">
-          <h2 className="text-lg mb-4 font-semibold">Análisis de Autenticidad:</h2>
-          <p className="mb-2">Se ha determinado que este contenido tiene una alta probabilidad de ser <span className="font-bold text-green-500">{label.toUpperCase()}</span> con una probabilidad de: <span className="font-bold">{probability}</span></p>
-          <p>Se ha determinado que este contenido tiene una alta probabilidad de ser <span className="font-bold text-purple-500">{complementaryLabel.toUpperCase()}</span> con una probabilidad de: <span className="font-bold">{complementaryProbability}</span></p>
+          <h2 className="text-lg mb-4 font-semibold">
+            Análisis de Autenticidad:
+          </h2>
+          <p className="mb-2">
+            Se ha determinado que este contenido tiene una alta probabilidad de
+            ser{" "}
+            <span className="font-bold text-green-500">
+              {label.toUpperCase()}
+            </span>{" "}
+            con una probabilidad de:{" "}
+            <span className="font-bold">{probability}</span>
+          </p>
+          <p>
+            Se ha determinado que este contenido tiene una alta probabilidad de
+            ser{" "}
+            <span className="font-bold text-purple-500">
+              {complementaryLabel.toUpperCase()}
+            </span>{" "}
+            con una probabilidad de:{" "}
+            <span className="font-bold">{complementaryProbability}</span>
+          </p>
         </div>
         <div className="bg-gray-900 text-white rounded-lg p-6 mb-6 w-full shadow-md">
           <h2 className="text-lg mb-4 font-semibold">Califica el Resultado:</h2>
-          <p className="text-sm mb-4">¡Tu opinión es crucial para mejorar la precisión del sistema!</p>
+          <p className="text-sm mb-4">
+            ¡Tu opinión es crucial para mejorar la precisión del sistema!
+          </p>
           <StarRating
             rating={rating}
             hoverRating={hoverRating}
@@ -122,7 +182,11 @@ const Resultado = () => {
           />
         </div>
       </div>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        rating={rating}
+      />
     </div>
   );
 };

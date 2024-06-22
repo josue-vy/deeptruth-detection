@@ -24,7 +24,7 @@ describe('Auth module', () => {
     expect(signInWithGoogle).toHaveBeenCalled();
   });
 
-//   it('should handle Google sign-in error', async () => {
+//   it('Iniciar sesion - error', async () => {
 //     const error = new Error('Google sign-in error');
 //     (signInWithGoogle as jest.Mock).mockRejectedValueOnce;
 //     await signInWithGoogle();

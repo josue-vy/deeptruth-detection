@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@jest/globals": "^29.7.0",
+    "axios": "^1.7.2",
     "firebase": "^10.12.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

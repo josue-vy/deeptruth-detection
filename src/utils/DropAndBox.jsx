@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import { consultFace } from '../components/api/deteccion.api';
 
 const DropAndBox = () => {
   const [dragging, setDragging] = useState(false);
@@ -9,6 +10,7 @@ const DropAndBox = () => {
   const [scanEnabled, setScanEnabled] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const [file, setFile] = useState(null); // Nuevo estado para almacenar el archivo
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -33,43 +35,44 @@ const DropAndBox = () => {
     setDragging(false);
     const files = [...e.dataTransfer.files];
     if (files.length > 0) {
-      const file = files[0];
-      setFileName(file.name);
-      const fileObjectUrl = URL.createObjectURL(file);
-      setFileUrl(fileObjectUrl);
-      const uploadTime = new Date().toLocaleString();
-      setUploadTime(uploadTime);
-      localStorage.setItem('fileName', file.name);
-      localStorage.setItem('fileUrl', fileObjectUrl);
-      localStorage.setItem('uploadTime', uploadTime);
-      setScanEnabled(true);
+      handleFileSelectHelper(files[0]);
     }
-    console.log(files);
   };
 
   const handleFileSelect = (e) => {
     const files = [...e.target.files];
     if (files.length > 0) {
-      const file = files[0];
-      setFileName(file.name);
-      const fileObjectUrl = URL.createObjectURL(file);
-      setFileUrl(fileObjectUrl);
-      const uploadTime = new Date().toLocaleString();
-      setUploadTime(uploadTime);
-      localStorage.setItem('fileName', file.name);
-      localStorage.setItem('fileUrl', fileObjectUrl);
-      localStorage.setItem('uploadTime', uploadTime);
-      setScanEnabled(true);
+      handleFileSelectHelper(files[0]);
     }
-    console.log(files);
+  };
+
+  const handleFileSelectHelper = (file) => {
+    setFileName(file.name);
+    const fileObjectUrl = URL.createObjectURL(file);
+    setFileUrl(fileObjectUrl);
+    const uploadTime = new Date().toLocaleString();
+    setUploadTime(uploadTime);
+    localStorage.setItem('fileName', file.name);
+    localStorage.setItem('fileUrl', fileObjectUrl);
+    localStorage.setItem('uploadTime', uploadTime);
+    setScanEnabled(true);
+    setFile(file); // Almacenar el archivo en el estado
   };
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
 
-  const handleScanClick = () => {
-    navigate('/resultado');
+  const handleScanClick = async () => {
+    if (!file) return; // Verificar que haya un archivo seleccionado
+    try {
+      const response = await consultFace(file); // Pasar el archivo directamente
+      localStorage.setItem('label', response.label);
+      localStorage.setItem('probability', response.probability);
+      navigate('/resultado');
+    } catch (error) {
+      console.error('Error al escanear la imagen', error);
+    }
   };
 
   return (
@@ -106,7 +109,9 @@ const DropAndBox = () => {
       </div>
       <div className="flex justify-center">
         <button
-          className={`mt-4 px-4 py-2 bg-violet-800 text-white rounded-md focus:outline-none focus:bg-gray-700 ${!scanEnabled ? 'opacity-50 cursor-not-allowed bg-gray-500' : ''}`}
+          className={`mt-4 px-4 py-2 bg-violet-800 text-white rounded-md focus:outline-none focus:bg-gray-700 ${
+            !scanEnabled ? 'opacity-50 cursor-not-allowed bg-gray-500' : ''
+          }`}
           onClick={handleScanClick}
           disabled={!scanEnabled}
         >

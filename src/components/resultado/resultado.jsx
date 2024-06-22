@@ -62,11 +62,15 @@ const Resultado = () => {
   const [fileName, setFileName] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const [uploadTime, setUploadTime] = useState('');
+  const [label, setLabel] = useState('');
+  const [probability, setProbability] = useState(0);
 
   useEffect(() => {
     setFileName(localStorage.getItem('fileName'));
     setFileUrl(localStorage.getItem('fileUrl'));
     setUploadTime(localStorage.getItem('uploadTime'));
+    setLabel(localStorage.getItem('label'));
+    setProbability(parseFloat(localStorage.getItem('probability')));
   }, []);
 
   const handleStarClick = (newRating) => {
@@ -74,13 +78,16 @@ const Resultado = () => {
     setIsModalOpen(true);
   };
 
+  const complementaryLabel = label === 'real' ? 'fake' : 'real';
+  const complementaryProbability = 1 - probability;
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-col items-center justify-center flex-grow">
-      {fileUrl && (
+        {fileUrl && (
           <div className="bg-gray-900 text-white rounded-lg p-6 mb-6 w-full shadow-md flex items-center mt-6">
             <div className="flex-shrink-0">
-            <h2 className="text-lg mb-4 font-semibold">Archivo Subido:</h2>
+              <h2 className="text-lg mb-4 font-semibold">Archivo Subido:</h2>
               {fileName.endsWith('.mp4') ? (
                 <video className="w-full max-w-md" controls>
                   <source src={fileUrl} type="video/mp4" />
@@ -95,14 +102,13 @@ const Resultado = () => {
               <p className="text-white font-bold">{fileName}</p>
               <p className="text-gray-400">Hora de envio:</p>
               <p className="text-white font-bold">{uploadTime}</p>
-
             </div>
           </div>
         )}
         <div className="bg-gray-900 text-white rounded-lg p-6 mb-6 w-full shadow-md">
           <h2 className="text-lg mb-4 font-semibold">Análisis de Autenticidad:</h2>
-          <p className="mb-2">Se ha determinado que este contenido tiene una alta probabilidad de ser <span className="font-bold text-green-500">REAL</span> con una probabilidad de: <span className="font-bold">00%</span></p>
-          <p>Se ha determinado que este contenido tiene una alta probabilidad de ser <span className="font-bold text-purple-500">FAKE</span> con una probabilidad de: <span className="font-bold">00%</span></p>
+          <p className="mb-2">Se ha determinado que este contenido tiene una alta probabilidad de ser <span className="font-bold text-green-500">{label.toUpperCase()}</span> con una probabilidad de: <span className="font-bold">{probability}</span></p>
+          <p>Se ha determinado que este contenido tiene una alta probabilidad de ser <span className="font-bold text-purple-500">{complementaryLabel.toUpperCase()}</span> con una probabilidad de: <span className="font-bold">{complementaryProbability}</span></p>
         </div>
         <div className="bg-gray-900 text-white rounded-lg p-6 mb-6 w-full shadow-md">
           <h2 className="text-lg mb-4 font-semibold">Califica el Resultado:</h2>

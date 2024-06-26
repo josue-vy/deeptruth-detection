@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://161.132.39.242/api/face/consult';
+const API_URL = ' https://dissclosure.sytes.net/api/face/consult';
 
 export const consultFace = async (file: File): Promise<{ label: string, probability: number }> => {
     const formData = new FormData();

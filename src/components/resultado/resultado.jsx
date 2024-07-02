@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { guardarValoracion } from "../api/valoracion.api";
 import { Link } from "react-router-dom";
+import { Bar } from "react-chartjs-2";
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 const StarRating = ({
   rating,
@@ -117,6 +121,47 @@ const Resultado = () => {
   const complementaryLabel = label === "real" ? "fake" : "real";
   const complementaryProbability = 1 - probability;
 
+  const data = {
+    labels: [label, complementaryLabel],
+    datasets: [
+      {
+        label: 'probabilidad',
+        data: [probability, complementaryProbability],
+        backgroundColor: ['rgba(50 205 50)', 'rgba(138 43 226)'],
+        hoverBackgroundColor: ['rgba(152 251 152)', 'rgba(147 112 219)'],
+      },
+    ],
+  };
+
+  const options = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: 'Resultado',
+        color: '#FFFFFF',
+        font: {
+          size: 18,
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#FFFFFF',
+        },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: '#FFFFFF',
+        },
+      },
+    },
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-col items-center justify-center flex-grow">
@@ -137,11 +182,14 @@ const Resultado = () => {
                 />
               )}
             </div>
-            <div className="ml-4">
+            <div className="ml-4 flex-1">
               <p className="text-gray-400">Nombre del archivo:</p>
               <p className="text-white font-bold">{fileName}</p>
               <p className="text-gray-400">Hora de envio:</p>
               <p className="text-white font-bold">{uploadTime}</p>
+            </div>
+            <div className="mr-48 w-104 h-60 border border-white rounded-lg p-4">
+              <Bar data={data} options={options} />
             </div>
           </div>
         )}

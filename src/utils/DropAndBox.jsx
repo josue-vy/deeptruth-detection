@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { consultFace } from '../components/api/deteccion.api';
+import Loader from '../utils/loader'; // Importa el componente Loader
 
 const DropAndBox = () => {
   const [dragging, setDragging] = useState(false);
@@ -8,6 +9,8 @@ const DropAndBox = () => {
   const [fileUrl, setFileUrl] = useState('');
   const [uploadTime, setUploadTime] = useState('');
   const [scanEnabled, setScanEnabled] = useState(false);
+  const [loading, setLoading] = useState(false); // Estado para el loader
+  const [progress, setProgress] = useState(0); // Estado para el progreso
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const [file, setFile] = useState(null); // Nuevo estado para almacenar el archivo
@@ -63,20 +66,43 @@ const DropAndBox = () => {
     fileInputRef.current.click();
   };
 
+  const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
   const handleScanClick = async () => {
     if (!file) return; // Verificar que haya un archivo seleccionado
+    setLoading(true); // Mostrar loader
+    setProgress(0); // Reiniciar progreso
+
+    const interval = setInterval(() => {
+      setProgress((prevProgress) => {
+        if (prevProgress >= 100) {
+          clearInterval(interval);
+          return prevProgress;
+        }
+        return prevProgress + 1; // Incrementa el progreso en 1%
+      });
+    }, 100); // Cada 100 ms
+
     try {
-      const response = await consultFace(file); // Pasar el archivo directamente
-      localStorage.setItem('label', response.label);
-      localStorage.setItem('probability', response.probability);
+      await Promise.all([
+        consultFace(file).then(response => {
+          localStorage.setItem('label', response.label);
+          localStorage.setItem('probability', response.probability);
+        }),
+        wait(10000) // Espera 10 segundos
+      ]);
       navigate('/resultado');
     } catch (error) {
       console.error('Error al escanear la imagen', error);
+    } finally {
+      clearInterval(interval); // Asegurarse de limpiar el intervalo
+      setLoading(false); // Ocultar loader
     }
   };
 
   return (
     <>
+      {loading && <Loader progress={progress} />}
       <div
         className={`border-2 border-dashed mb-8 border-gray-400 rounded-lg p-8 text-center ${
           dragging ? 'bg-gray-100' : 'bg-white'

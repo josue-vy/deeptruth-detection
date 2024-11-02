@@ -1,19 +1,27 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { consultFace } from '../components/api/deteccion.api';
-import Loader from '../utils/loader'; // Importa el componente Loader
+import { consultFace } from "../components/api/deteccion.api";
+import Loader from "./loader"; // Importa el componente Loader
 
 const DropAndBox = () => {
   const [dragging, setDragging] = useState(false);
-  const [fileName, setFileName] = useState('');
-  const [fileUrl, setFileUrl] = useState('');
-  const [uploadTime, setUploadTime] = useState('');
+  const [fileName, setFileName] = useState("");
+  const [fileUrl, setFileUrl] = useState("");
+  const [uploadTime, setUploadTime] = useState("");
   const [scanEnabled, setScanEnabled] = useState(false);
   const [loading, setLoading] = useState(false); // Estado para el loader
   const [progress, setProgress] = useState(0); // Estado para el progreso
+  const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const [file, setFile] = useState(null); // Nuevo estado para almacenar el archivo
+
+  const allowedFileTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+  ];
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -50,23 +58,32 @@ const DropAndBox = () => {
   };
 
   const handleFileSelectHelper = (file) => {
-    setFileName(file.name);
-    const fileObjectUrl = URL.createObjectURL(file);
-    setFileUrl(fileObjectUrl);
-    const uploadTime = new Date().toLocaleString();
-    setUploadTime(uploadTime);
-    localStorage.setItem('fileName', file.name);
-    localStorage.setItem('fileUrl', fileObjectUrl);
-    localStorage.setItem('uploadTime', uploadTime);
-    setScanEnabled(true);
-    setFile(file); // Almacenar el archivo en el estado
+    if (allowedFileTypes.includes(file.type)) {
+      setErrorMessage(""); // Limpiar el mensaje de error
+      setFileName(file.name);
+      const fileObjectUrl = URL.createObjectURL(file);
+      setFileUrl(fileObjectUrl);
+      const uploadTime = new Date().toLocaleString();
+      setUploadTime(uploadTime);
+      localStorage.setItem("fileName", file.name);
+      localStorage.setItem("fileUrl", fileObjectUrl);
+      localStorage.setItem("uploadTime", uploadTime);
+      setScanEnabled(true);
+      setFile(file); // Almacenar el archivo en el estado
+    } else {
+      setErrorMessage(
+        "Solo se permiten archivos de imagen (JPEG, JPG, PNG, WebP)"
+      );
+      setScanEnabled(false);
+      setFile(null);
+    }
   };
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
 
-  const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const handleScanClick = async () => {
     if (!file) return; // Verificar que haya un archivo seleccionado
@@ -85,15 +102,15 @@ const DropAndBox = () => {
 
     try {
       await Promise.all([
-        consultFace(file).then(response => {
-          localStorage.setItem('label', response.label);
-          localStorage.setItem('probability', response.probability);
+        consultFace(file).then((response) => {
+          localStorage.setItem("label", response.label);
+          localStorage.setItem("probability", response.probability);
         }),
-        wait(10000) // Espera 10 segundos
+        wait(10000), // Espera 10 segundos
       ]);
-      navigate('/resultado');
+      navigate("/resultado");
     } catch (error) {
-      console.error('Error al escanear la imagen', error);
+      console.error("Error al escanear la imagen", error);
     } finally {
       clearInterval(interval); // Asegurarse de limpiar el intervalo
       setLoading(false); // Ocultar loader
@@ -105,14 +122,16 @@ const DropAndBox = () => {
       {loading && <Loader progress={progress} />}
       <div
         className={`border-2 border-dashed mb-8 border-gray-400 rounded-lg p-8 text-center ${
-          dragging ? 'bg-gray-100' : 'bg-white'
+          dragging ? "bg-gray-100" : "bg-white"
         }`}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        <p className="text-lg font-semibold mb-4">Arrastra y suelta archivos aquí</p>
+        <p className="text-lg font-semibold mb-4">
+          Arrastra y suelta archivos aquí
+        </p>
         <p className="text-gray-500">o</p>
         <button
           className="mt-4 px-4 py-2 bg-violet-800 text-white rounded-md focus:outline-none focus:bg-gray-700"
@@ -123,20 +142,27 @@ const DropAndBox = () => {
         <input
           type="file"
           ref={fileInputRef}
-          style={{ display: 'none' }}
+          data-testid="file-input"
+          style={{ display: "none" }}
           onChange={handleFileSelect}
           multiple
         />
+
         {fileName && (
           <div className="mt-4">
             <p className="text-gray-700">Archivo seleccionado: {fileName}</p>
+          </div>
+        )}
+        {errorMessage && (
+          <div className="mt-4 text-red-500">
+            <p>{errorMessage}</p>
           </div>
         )}
       </div>
       <div className="flex justify-center">
         <button
           className={`mt-4 px-4 py-2 bg-violet-800 text-white rounded-md focus:outline-none focus:bg-gray-700 ${
-            !scanEnabled ? 'opacity-50 cursor-not-allowed bg-gray-500' : ''
+            !scanEnabled ? "opacity-50 cursor-not-allowed bg-gray-500" : ""
           }`}
           onClick={handleScanClick}
           disabled={!scanEnabled}

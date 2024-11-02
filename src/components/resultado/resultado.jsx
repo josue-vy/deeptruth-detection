@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { guardarValoracion } from "../api/valoracion.api";
-import { Link } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
 import { Chart, registerables } from 'chart.js';
+import { useNavigate } from 'react-router-dom'; 
 
 Chart.register(...registerables);
 
@@ -38,11 +38,19 @@ const StarRating = ({
 
 const Modal = ({ isOpen, onClose, rating }) => {
   const [comentario, setComentario] = useState("");
+  const [successMessage, setSuccessMessage] = useState(""); // Estado para el mensaje de éxito
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     try {
       await guardarValoracion(rating, comentario);
-      onClose();
+      setSuccessMessage("¡Comentario enviado correctamente!"); // Mostrar el mensaje de éxito
+      setComentario(""); // Limpiar el campo del comentario después de enviarlo
+      setTimeout(() => {
+        setSuccessMessage(""); // Limpiar el mensaje después de unos segundos
+        onClose(); // Cerrar el modal automáticamente después de 2 segundos
+        navigate("/scaner");
+      }, 4000); // Temporizador de 2 segundos
     } catch (error) {
       console.error("Error al enviar la valoración:", error);
     }
@@ -82,14 +90,17 @@ const Modal = ({ isOpen, onClose, rating }) => {
           value={comentario}
           onChange={(e) => setComentario(e.target.value)}
         ></textarea>
-        <Link to="/scaner" className="hover:text-purple-500 mr-4">
-          <button
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
-            onClick={handleSubmit}
-          >
-            Enviar
-          </button>
-        </Link>
+        <button
+          className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition"
+          onClick={handleSubmit}
+        >
+          Enviar
+        </button>
+        {successMessage && (
+          <div className="mt-4 text-green-500">
+            <p>{successMessage}</p>
+          </div>
+        )}
       </div>
     </div>
   );

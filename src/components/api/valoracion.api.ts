@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://161.132.39.242:3000/backend/';
+const API_URL = 'http://localhost:3000/backend/';
 
 export const guardarValoracion = async (rating: number, comentario: string): Promise<void> => {
   try {

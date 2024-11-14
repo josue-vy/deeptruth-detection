@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://sql-bd-deeptruth-detection.onrender.com/';
+const API_URL = 'https://sql-bd-deeptruth-detection.onrender.com/backend/';
 
 export const guardarValoracion = async (rating: number, comentario: string): Promise<void> => {
   try {

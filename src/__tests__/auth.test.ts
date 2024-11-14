@@ -24,13 +24,6 @@ describe('Auth module', () => {
     expect(signInWithGoogle).toHaveBeenCalled();
   });
 
-//   it('Iniciar sesion - error', async () => {
-//     const error = new Error('Google sign-in error');
-//     (signInWithGoogle as jest.Mock).mockRejectedValueOnce;
-//     await signInWithGoogle();
-//     expect(console.error).toHaveBeenCalledWith(error);
-//   });
-
   it('Cerrar Sesion', async () => {
     await signOut();
     expect(signOut).toHaveBeenCalled();

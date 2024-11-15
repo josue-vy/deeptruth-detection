@@ -1,6 +1,6 @@
 import React from 'react';
 
-function UserCard({ username, rating }) {
+function UserCard({ username, rating, comentario }) {
   const stars = Array.from({ length: 5 }, (_, index) => (
     <svg
       key={index}
@@ -13,12 +13,14 @@ function UserCard({ username, rating }) {
   ));
 
   return (
-    <div className="bg-gray-300 p-4 rounded-lg shadow">
+    <div className="bg-gray-300 p-4 rounded-lg shadow-lg">
       <div className="flex items-center mb-2">
         <span className="font-bold mr-2">{username}</span>
         <div className="flex">{stars}</div>
       </div>
-      <div className="bg-gray-400 p-6 rounded-lg"></div>
+      <div className="bg-gray-200 p-4 rounded-lg">
+        <p>{comentario}</p>
+      </div>
     </div>
   );
 }
